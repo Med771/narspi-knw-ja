@@ -13,10 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class RabbitConfig {
-    private final String queryReqQueue = "gtw.query.request.queue";
-    private final String queryRepQueue = "gtw.query.reply.queue";
-    private final String historyReqQueue = "gtw.history.request.queue";
-    private final String historyRepQueue = "gtw.history.reply.queue";
+    public static final String queryReqQueue = "gtw.query.request.queue";
+
+    public static final String historyReqQueue = "gtw.history.request.queue";
 
     private final String gtwExc = "gtw.exchange";
 
@@ -34,31 +33,8 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue queryReplyQueue() {
-        return QueueBuilder.nonDurable(queryRepQueue)
-                .autoDelete()
-                .exclusive()
-                .build();
-    }
-
-    @Bean
-    public Queue historyReplyQueue() {
-        return QueueBuilder.nonDurable(historyRepQueue)
-                .autoDelete()
-                .exclusive()
-                .build();
-    }
-
-    @Bean
     public DirectExchange gtwExchange() {
         return new DirectExchange(gtwExc);
-    }
-
-    @Bean
-    public Binding queryRequestBinding(Queue queryRequestQueue, DirectExchange gtwExchange) {
-        return BindingBuilder.bind(queryRequestQueue)
-                .to(gtwExchange)
-                .with(queryReqRoutingKey);
     }
 
     @Bean
