@@ -1,0 +1,10 @@
+package ru.sin.narspiknwja.body;
+
+import java.util.List;
+import java.util.UUID;
+
+public record QueryRes(
+        UUID uuid,
+        List<String> docs
+) {
+}
