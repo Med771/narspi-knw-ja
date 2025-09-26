@@ -1,5 +1,7 @@
 package ru.sin.narspiknwja.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.*;
@@ -38,6 +40,13 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Binding queryRequestBinding(Queue queryRequestQueue, DirectExchange gtwExchange) {
+        return BindingBuilder.bind(queryRequestQueue)
+                .to(gtwExchange)
+                .with(queryReqRoutingKey);
+    }
+
+    @Bean
     public Binding historyRequestBinding(Queue historyRequestQueue, DirectExchange gtwExchange) {
         return BindingBuilder.bind(historyRequestQueue)
                 .to(gtwExchange)
@@ -56,5 +65,12 @@ public class RabbitConfig {
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 }
