@@ -18,15 +18,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RabbitTools {
+    private final YandexTools yandexTools;
+
     private final Logger logger = LoggerFactory.getLogger(RabbitTools.class);
 
     @RabbitListener(queues = RabbitConfig.queryReqQueue, concurrency = "3-5")
     public QueryRes handleQuery(QueryReq req) {
         logger.info("[UUID: {}] Handle query", req.uuid());
 
-        List<String> docs = List.of("OK", "OK");
+        List<String> knowledge = List.of();
 
-        return new QueryRes(req.uuid(), docs);
+        String answer = yandexTools.getQuery(req.history(), knowledge, req.query());
+
+        return new QueryRes(req.uuid(), answer);
     }
 
     @RabbitListener(queues = RabbitConfig.historyReqQueue, concurrency = "1-2")
