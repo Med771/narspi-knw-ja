@@ -16,10 +16,15 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class RabbitConfig {
     public static final String queryReqQueue = "gtw.query.request.queue";
-
     public static final String historyReqQueue = "gtw.history.request.queue";
 
+    public static final String urlsReqQueue = "gtw.query.request.queue";
+    public static final String pageReqQueue = "gtw.history.request.queue";
+
     private final String gtwExc = "gtw.exchange";
+
+    private final String urlsReqRoutingKey = "prs.urls.request.routing.key";
+    private final String pageReqRoutingKey = "prs.page.request.routing.key";
 
     private final String queryReqRoutingKey = "gtw.query.request.routing.key";
     private final String historyReqRoutingKey = "gtw.history.request.routing.key";
@@ -32,6 +37,16 @@ public class RabbitConfig {
     @Bean
     public Queue historyRequestQueue() {
         return QueueBuilder.durable(historyReqQueue).build();
+    }
+
+    @Bean
+    public Queue urlsRequestQueue() {
+        return QueueBuilder.durable(urlsReqQueue).build();
+    }
+
+    @Bean
+    public Queue pageRequestQueue() {
+        return QueueBuilder.durable(pageReqQueue).build();
     }
 
     @Bean
@@ -51,6 +66,20 @@ public class RabbitConfig {
         return BindingBuilder.bind(historyRequestQueue)
                 .to(gtwExchange)
                 .with(historyReqRoutingKey);
+    }
+
+    @Bean
+    public Binding urlsRequestBinding(Queue urlsRequestQueue, DirectExchange gtwExchange) {
+        return BindingBuilder.bind(urlsRequestQueue)
+                .to(gtwExchange)
+                .with(urlsReqRoutingKey);
+    }
+
+    @Bean
+    public Binding pageRequestBinding(Queue pageRequestQueue, DirectExchange gtwExchange) {
+        return BindingBuilder.bind(pageRequestQueue)
+                .to(gtwExchange)
+                .with(pageReqRoutingKey);
     }
 
     @Bean

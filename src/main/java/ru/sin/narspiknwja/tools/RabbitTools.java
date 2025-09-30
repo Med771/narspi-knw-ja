@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
-import ru.sin.narspiknwja.body.HistoryReq;
-import ru.sin.narspiknwja.body.HistoryRes;
-import ru.sin.narspiknwja.body.QueryReq;
-import ru.sin.narspiknwja.body.QueryRes;
+import ru.sin.narspiknwja.body.*;
 import ru.sin.narspiknwja.config.RabbitConfig;
 import ru.sin.narspiknwja.model.History;
 
@@ -41,5 +38,17 @@ public class RabbitTools {
                 new History(LocalDateTime.now(), "query", LocalDateTime.now(), "answer"));
 
         return new HistoryRes(req.uuid(), history);
+    }
+
+    @RabbitListener(queues = RabbitConfig.urlsReqQueue, concurrency = "1-2")
+    public void handleUrls(UrlsReq req) {
+        logger.info("[UUID: {}] Handle urls", req.uuid());
+
+        
+    }
+
+    @RabbitListener(queues = RabbitConfig.pageReqQueue, concurrency = "1-2")
+    public void handle(){
+
     }
 }
