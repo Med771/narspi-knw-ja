@@ -21,6 +21,9 @@ public class RabbitConfig {
     public static final String urlsReqQueue = "gtw.urls.request.queue";
     public static final String pageReqQueue = "gtw.page.request.queue";
 
+    public static final String embedReqQueue = "gtw.embed.request.queue";
+    public static final String docsReqQueue = "gtw.embed.request.queue";
+
     private final String gtwExc = "gtw.exchange";
 
     private final String queryReqRoutingKey = "gtw.query.request.routing.key";
@@ -28,6 +31,9 @@ public class RabbitConfig {
 
     private final String urlsReqRoutingKey = "prs.urls.request.routing.key";
     private final String pageReqRoutingKey = "prs.page.request.routing.key";
+
+    private final String embedReqRoutingKey = "prs.embed.request.routing.key";
+    private final String docsReqRoutingKey = "prs.docs.request.routing.key";
 
     @Bean
     public Queue queryRequestQueue() {
@@ -47,6 +53,16 @@ public class RabbitConfig {
     @Bean
     public Queue pageRequestQueue() {
         return QueueBuilder.durable(pageReqQueue).build();
+    }
+
+    @Bean
+    public Queue embedRequestQueue() {
+        return QueueBuilder.durable(embedReqQueue).build();
+    }
+
+    @Bean
+    public Queue docsRequestQueue() {
+        return QueueBuilder.durable(docsReqQueue).build();
     }
 
     @Bean
@@ -80,6 +96,20 @@ public class RabbitConfig {
         return BindingBuilder.bind(pageRequestQueue)
                 .to(gtwExchange)
                 .with(pageReqRoutingKey);
+    }
+
+    @Bean
+    public Binding embedRequestBinding(Queue embedRequestQueue, DirectExchange gtwExchange) {
+        return BindingBuilder.bind(embedRequestQueue)
+                .to(gtwExchange)
+                .with(embedReqRoutingKey);
+    }
+
+    @Bean
+    public Binding docsRequestBinding(Queue docsRequestQueue, DirectExchange gtwExchange) {
+        return BindingBuilder.bind(docsRequestQueue)
+                .to(gtwExchange)
+                .with(docsReqRoutingKey);
     }
 
     @Bean
