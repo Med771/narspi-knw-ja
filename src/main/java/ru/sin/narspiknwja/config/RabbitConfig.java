@@ -18,16 +18,16 @@ public class RabbitConfig {
     public static final String queryReqQueue = "gtw.query.request.queue";
     public static final String historyReqQueue = "gtw.history.request.queue";
 
-    public static final String urlsReqQueue = "gtw.query.request.queue";
-    public static final String pageReqQueue = "gtw.history.request.queue";
+    public static final String urlsReqQueue = "gtw.urls.request.queue";
+    public static final String pageReqQueue = "gtw.page.request.queue";
 
     private final String gtwExc = "gtw.exchange";
 
-    private final String urlsReqRoutingKey = "prs.urls.request.routing.key";
-    private final String pageReqRoutingKey = "prs.page.request.routing.key";
-
     private final String queryReqRoutingKey = "gtw.query.request.routing.key";
     private final String historyReqRoutingKey = "gtw.history.request.routing.key";
+
+    private final String urlsReqRoutingKey = "prs.urls.request.routing.key";
+    private final String pageReqRoutingKey = "prs.page.request.routing.key";
 
     @Bean
     public Queue queryRequestQueue() {

@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import ru.sin.narspiknwja.body.*;
 import ru.sin.narspiknwja.config.RabbitConfig;
 import ru.sin.narspiknwja.model.History;
+import ru.sin.narspiknwja.model.Site;
+import ru.sin.narspiknwja.model.Url;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,14 +44,24 @@ public class RabbitTools {
     }
 
     @RabbitListener(queues = RabbitConfig.urlsReqQueue, concurrency = "1-2")
-    public void handleUrls(UrlsReq req) {
+    public UrlsRes handleUrls(UrlsReq req) {
         logger.info("[UUID: {}] Handle urls", req.uuid());
+        List<Site> sites = new ArrayList<>();
 
-        
+        for (int i = 1; i <= req.data().size(); i++) {
+            System.out.println(req.data().get(i - 1).link());
+            sites.add(new Site((long) i, req.data().get(i - 1).link()));
+        }
+
+        return new UrlsRes(req.uuid(), sites);
     }
 
     @RabbitListener(queues = RabbitConfig.pageReqQueue, concurrency = "1-2")
-    public void handle(){
+    public void handlePage(PageReq req) {
+        logger.info("[UUID: {}] Handle page", req.uuid());
 
+        for (int i = 1; i <= req.pages().size(); i++) {
+            System.out.println(req.pages().get(i - 1).text());
+        }
     }
 }
