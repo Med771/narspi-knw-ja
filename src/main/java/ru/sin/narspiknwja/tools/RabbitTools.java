@@ -9,7 +9,6 @@ import ru.sin.narspiknwja.body.*;
 import ru.sin.narspiknwja.config.RabbitConfig;
 import ru.sin.narspiknwja.model.History;
 import ru.sin.narspiknwja.model.Site;
-import ru.sin.narspiknwja.model.Url;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
