@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <!-- Create TimeStamp trigger -->
+    <include file="db/changelog/config/changeset-001-add-timestamp-trigger.xml"/>
+
+    <!-- Creating Tables -->
+    <include file="db/changelog/table/parse_posts/changeset-001-create-parse-posts-table.xml"/>
+    <include file="db/changelog/table/embeddings/changeset-001-create-embeddings-table.xml"/>
+
+</databaseChangeLog>

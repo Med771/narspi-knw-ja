@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Создание таблицы parse_posts -->
+    <changeSet id="create-parse-posts-table" author="med">
+        <comment>Создание таблицы постов</comment>
+        <createTable tableName="parse_posts">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source" type="VARCHAR(511)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parsed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="TEXT"/>
+            <column name="text" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="published_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Триггер для обновления timestamps -->
+    <changeSet id="create-parse-posts-timestamps-trigger" author="med">
+        <comment>Создание триггера trg_timestamps_parse_posts для таблицы parse_posts</comment>
+        <sql>
+            CREATE TRIGGER trg_timestamps_parse_posts
+            BEFORE INSERT OR UPDATE ON parse_posts
+            FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamps();
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

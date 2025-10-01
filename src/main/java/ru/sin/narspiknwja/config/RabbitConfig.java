@@ -22,7 +22,7 @@ public class RabbitConfig {
     public static final String pageReqQueue = "gtw.page.request.queue";
 
     public static final String embedReqQueue = "gtw.embed.request.queue";
-    public static final String docsReqQueue = "gtw.embed.request.queue";
+    public static final String docsReqQueue = "gtw.docs.request.queue";
 
     private final String gtwExc = "gtw.exchange";
 

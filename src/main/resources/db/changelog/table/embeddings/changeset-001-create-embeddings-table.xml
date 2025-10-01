@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Создание таблицы embeddings -->
+    <changeSet id="create-embeddings-table" author="med">
+        <comment>Создание таблицы эмбеддингов</comment>
+        <createTable tableName="embeddings">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="post_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chunk" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chunk_order" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="embed" type="vector(512)"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Внешний ключ post_id -> parse_posts(id) -->
+    <changeSet id="add-embeddings-post-fk" author="med">
+        <comment>Внешний ключ post_id -> parse_posts(id)</comment>
+        <addForeignKeyConstraint
+                baseTableName="embeddings"
+                baseColumnNames="post_id"
+                constraintName="fk_embeddings_posts"
+                referencedTableName="parse_posts"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- Индексы для таблицы embeddings -->
+    <changeSet id="create-embeddings-indexes" author="med">
+        <comment>Создание индексов для таблицы embeddings</comment>
+        <createIndex indexName="idx_embeddings_post_id" tableName="embeddings">
+            <column name="post_id"/>
+        </createIndex>
+        <sql>
+            CREATE INDEX idx_embeddings_vector_hnsw ON embeddings USING hnsw (embed vector_l2_ops);
+        </sql>
+    </changeSet>
+
+    <!-- Триггер для обновления timestamps -->
+    <changeSet id="create-embeddings-timestamps-trigger" author="med">
+        <comment>Создание триггера trg_timestamps_embeddings для таблицы embeddings</comment>
+        <sql>
+            CREATE TRIGGER trg_timestamps_embeddings
+                BEFORE INSERT OR UPDATE ON embeddings
+                                     FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamps();
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
