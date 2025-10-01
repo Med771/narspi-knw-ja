@@ -15,8 +15,6 @@ public interface ParsePostRepository extends JpaRepository<ParsePostEntity, Long
     List<ParsePostEntity> findByType(String type);
 
     List<ParsePostEntity> findByParsed(Boolean parsed);
-    
-    List<ParsePostEntity> findByNeedsRefactor(Boolean needsRefactor);
 
     List<ParsePostEntity> findAllBySourceIn(List<String> sources);
 

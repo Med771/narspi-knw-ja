@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +108,14 @@ public class DataTools {
     }
 
     public List<String> getKnowledge(String query) {
-        List<Float> vector = consumerTools.embedSendAndReceive(query);
+        List<Float> vector;
+
+        try {
+            vector = consumerTools.embedSendAndReceive(query);
+        }
+        catch (RuntimeException e) {
+            return new ArrayList<>();
+        }
 
         float[] embed = new float[vector.size()];
 
@@ -117,7 +123,14 @@ public class DataTools {
             embed[i] = vector.get(i);
         }
 
-        List<EmbedWithSimilarity> embeds = embeddingRepository.findNearestEmbeddings(embed, 50);
+        List<EmbedWithSimilarity> embeds;
+
+        try {
+            embeds = embeddingRepository.findNearestEmbeddings(embed, 50);
+        }
+        catch (Exception e) {
+            return new ArrayList<>();
+        }
 
         return embeds.stream()
                 .map(EmbedWithSimilarity::chunk)
@@ -125,12 +138,25 @@ public class DataTools {
     }
 
     private boolean createEmbeds(ParsePostEntity parsePostEntity, String text) {
-        List<String> chunks = Stream.of(text.split("\n\n"))
-                .filter(String::isBlank)
-                .collect(Collectors.toList());
+        List<String> chunks = new ArrayList<>();
+
+        for (String chunk: text.split("\n")) {
+            logger.info("Chunk: {}", chunk);
+
+            if (!chunk.isBlank()) {
+                chunks.add("[Published At: %s] [Text: %s]".formatted(parsePostEntity.getPublishedAt(), chunk));
+            }
+        }
 
         List<EmbeddingEntity> embeds = new ArrayList<>();
-        List<List<Float>> embeddings = consumerTools.docsSendAndReceive(chunks);
+        List<List<Float>> embeddings;
+
+        try {
+            embeddings = consumerTools.docsSendAndReceive(chunks);
+        }
+        catch (RuntimeException e) {
+            return false;
+        }
 
         for (int i = 0; i < chunks.size(); i++) {
             if (i < embeddings.size() && !embeddings.get(i).isEmpty()) {

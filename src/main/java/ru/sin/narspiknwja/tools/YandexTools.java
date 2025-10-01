@@ -60,13 +60,15 @@ public class YandexTools {
     }
 
     public String getQuery(List<HistoryMessage> history, List<String> knowledge, String query) {
-        String context = config.getContextText().formatted(LocalDate.now(), knowledge);
+        String knw = knowledge.isEmpty() ? "" : String.join("\n", knowledge);
 
-        GptRequest request = getGptRequest(history, context, query);
+        // String context = config.getContextText().formatted(LocalDate.now(), knowledge);
+
+        // GptRequest request = getGptRequest(history, context, query);
 
         try {
             // TODO: change Yandex queries
-            return "OK"; // getAnswer(request);
+            return knw;
         }
         catch (Exception e) {
             return null;

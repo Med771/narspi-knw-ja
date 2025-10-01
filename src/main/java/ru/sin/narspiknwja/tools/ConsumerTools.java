@@ -24,7 +24,7 @@ public class ConsumerTools {
     private final Logger logger = LoggerFactory.getLogger(ConsumerTools.class);
 
 
-    public List<List<Float>> docsSendAndReceive(List<String> docs) {
+    public List<List<Float>> docsSendAndReceive(List<String> docs) throws RuntimeException {
         DocsReq req = new DocsReq(
                 UUID.randomUUID(),
                 docs
@@ -62,7 +62,7 @@ public class ConsumerTools {
         }
     }
 
-    public List<Float> embedSendAndReceive(String query) {
+    public List<Float> embedSendAndReceive(String query) throws RuntimeException {
         EmbedReq req = new EmbedReq(
                 UUID.randomUUID(),
                 query
