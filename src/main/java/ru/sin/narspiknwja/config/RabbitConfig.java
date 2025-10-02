@@ -117,7 +117,7 @@ public class RabbitConfig {
                                          Jackson2JsonMessageConverter messageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(messageConverter);
-        template.setReplyTimeout(5000);
+        template.setReplyTimeout(120000);
         return template;
     }
 
