@@ -28,7 +28,7 @@ public class YandexConfig {
                 .baseUrl(yandexProperty.getContext().getUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, apiKeyHeader)
-                .defaultHeader(yandexProperty.getHeader().getFolderKey(), yandexProperty.getFolderId())
+                //.defaultHeader(yandexProperty.getHeader().getFolderKey(), yandexProperty.getFolderId())
                 .build();
 
     }

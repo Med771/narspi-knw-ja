@@ -1,6 +1,9 @@
 package ru.sin.narspiknwja.tools;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import ru.sin.narspiknwja.config.YandexConfig;
 import ru.sin.narspiknwja.model.GptRequest;
@@ -20,20 +23,37 @@ public class YandexTools {
 
     private final YandexProperty yandexProperty;
 
+    private static final Logger logger = LoggerFactory.getLogger(YandexTools.class);
+
     private String getAnswer(GptRequest request) {
         GptResponse response =  config.contextWebClient().post()
                 .uri("/completion")
                 .bodyValue(request)
                 .retrieve()
+                .onStatus(HttpStatusCode::isError, resp ->
+                        resp.bodyToMono(String.class).map(body ->
+                                new RuntimeException("Yandex API error: " + body)
+                        )
+                )
                 .bodyToMono(GptResponse.class)
                 .block();
 
 
-        if (response == null || response.result() == null || response.result().alternatives().isEmpty()) {
-            throw new RuntimeException("No result found");
+        if (response == null) {
+            throw new RuntimeException("Response is null");
         }
 
-        return response.result().alternatives().getFirst().message().message();
+        if (response.result() == null) {
+            throw new RuntimeException("Result is null. Response is " + response);
+        }
+
+        if (response.result().alternatives().isEmpty()) {
+            throw new RuntimeException("Alternatives is empty");
+        }
+
+        logger.info("Yandex API response tokens: {}", response.result().usage().totalTokens());
+
+        return response.result().alternatives().getFirst().message().text();
     }
 
     private GptRequest getGptRequest(List<HistoryMessage> history, String context, String query) {
@@ -41,9 +61,9 @@ public class YandexTools {
 
         messages.add(new HistoryMessage("system", context));
 
-        for (int i = 0; i < Integer.min(history.size(), 10); i++) {
-            messages.add(history.get(i));
-        }
+//        for (int i = 0; i < Integer.min(history.size(), 10); i++) {
+//            messages.add(history.get(i));
+//        }
 
         messages.add(new HistoryMessage("user", query));
 
@@ -60,17 +80,18 @@ public class YandexTools {
     }
 
     public String getQuery(List<HistoryMessage> history, List<String> knowledge, String query) {
-        String knw = knowledge.isEmpty() ? "" : String.join("\n", knowledge);
+        String context = config.getContextText().formatted(LocalDate.now(), String.join("\n", knowledge));
 
-        // String context = config.getContextText().formatted(LocalDate.now(), knowledge);
+        GptRequest request = getGptRequest(history, context, query);
 
-        // GptRequest request = getGptRequest(history, context, query);
+        logger.info("[DateTine: {}] [Context length: {}] Yandex query",LocalDate.now(), context.length());
 
         try {
-            // TODO: change Yandex queries
-            return knw;
+            return getAnswer(request);
         }
         catch (Exception e) {
+            logger.error("Failed to get answer: {}", e.getMessage());
+
             return null;
         }
     }
