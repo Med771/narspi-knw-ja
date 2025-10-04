@@ -13,6 +13,8 @@ import ru.sin.narspiknwja.model.EmbedWithSimilarity;
 import ru.sin.narspiknwja.model.Page;
 import ru.sin.narspiknwja.model.Site;
 import ru.sin.narspiknwja.model.Url;
+import ru.sin.narspiknwja.property.EmbedProperty;
+import ru.sin.narspiknwja.property.ParserProperty;
 import ru.sin.narspiknwja.repository.EmbeddingRepository;
 import ru.sin.narspiknwja.repository.ParsePostRepository;
 
@@ -31,6 +33,9 @@ public class DataTools {
     private final EmbeddingRepository embeddingRepository;
 
     private final ConsumerTools consumerTools;
+
+    private final ParserProperty parserProperty;
+    private final EmbedProperty embedProperty;
 
     public List<Site> saveSources(UrlsReq req) {
         String type = req.type();
@@ -126,7 +131,7 @@ public class DataTools {
         List<EmbedWithSimilarity> embeds;
 
         try {
-            embeds = embeddingRepository.findNearestEmbeddings(embed, 50);
+            embeds = embeddingRepository.findNearestEmbeddings(embed, embedProperty.getMaxChunks());
         }
         catch (Exception e) {
             return new ArrayList<>();
@@ -140,7 +145,7 @@ public class DataTools {
     private boolean createEmbeds(ParsePostEntity parsePostEntity, String text) {
         List<String> chunks = new ArrayList<>();
 
-        for (String chunk: text.split("\n")) {
+        for (String chunk: text.split(parserProperty.getSplitter())) {
             logger.info("Chunk: {}", chunk);
 
             if (!chunk.isBlank()) {
